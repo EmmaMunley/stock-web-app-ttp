@@ -8,8 +8,6 @@ const sessionStore = new SequelizeStore({ db });
 const PORT = process.env.PORT || 8080;
 const app = express();
 
-module.exports = app;
-
 const createApp = () => {
   // logging middleware
   app.use(morgan('dev'));
@@ -19,7 +17,7 @@ const createApp = () => {
   app.use(express.urlencoded({ extended: true }));
 
   // api routes
-  // app.use('/api', require('./api'))
+  app.use('/api', require('./api'));
 
   // static file-serving middleware
   app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -70,3 +68,5 @@ if (require.main === module) {
 } else {
   createApp();
 }
+
+module.exports = app;
