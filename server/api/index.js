@@ -1,7 +1,7 @@
 const router = require('express').Router();
 module.exports = router;
 
-// router.use('/stocks', require('./stocks'))
+router.use('/stocks', require('./stocks'));
 router.use('/portfolios', require('./portfolios'));
 router.use('/users', require('./users'));
 

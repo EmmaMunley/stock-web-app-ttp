@@ -5,15 +5,21 @@
   "main": "index.js",
   "scripts": {
     "seed": "node seed.js",
-    "start": "node server"
+    "start": "node server",
+    "start:dev": "NODE_ENV='development' & NODE_ENV='development' npm run start-server node --inspect=5858 server",
+    "start-server": "nodemon server -e html,js,scss --ignore public --ignore client"
   },
   "author": "Emma Munley",
   "dependencies": {
+    "axios": "^0.19.2",
     "chalk": "^3.0.0",
     "connect-session-sequelize": "^6.0.0",
+    "dotenv": "^8.2.0",
     "express": "^4.16.4",
     "express-session": "^1.15.1",
     "history": "^4.9.0",
+    "iex-api": "0.0.3",
+    "isomorphic-fetch": "^2.2.1",
     "morgan": "^1.9.1",
     "pg": "^7.9.0",
     "sequelize": "^5.3.1"
