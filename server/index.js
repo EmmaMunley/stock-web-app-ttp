@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const session = require('express-session');
+const passport = require('passport');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { db } = require('./db');
 const sessionStore = new SequelizeStore({ db });
@@ -10,6 +11,19 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
+
+// passport registration
+passport.serializeUser((user, done) => done(null, user.id));
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await db.models.user.findByPk(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
+});
+
 const createApp = () => {
   // logging middleware
   app.use(morgan('dev'));
@@ -18,7 +32,20 @@ const createApp = () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // api routes
+  // session middleware with passport
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // auth and api routes
+  app.use('/auth', require('./auth'));
   app.use('/api', require('./api'));
 
   // static file-serving middleware

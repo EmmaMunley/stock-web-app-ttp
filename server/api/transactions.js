@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const router = express.Router();
 const Axios = require('axios');
 const pkg = require('../../package.json');
-const { Transaction, User, Ticker, Portfolio } = require('../models');
+const { Transaction, User, Ticker, Portfolio } = require('../db');
 const db = new Sequelize(
   process.env.DATABASE_URL || `postgres://localhost:5432/${pkg.name}`,
   {

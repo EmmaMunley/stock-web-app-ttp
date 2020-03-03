@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Portfolio, Ticker } = require('../models/');
+const { Portfolio, Ticker } = require('../db/');
 const Axios = require('axios');
 
 router.use(express.json());
