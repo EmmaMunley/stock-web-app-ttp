@@ -21,22 +21,22 @@ const users = [
 const portfolios = [
   {
     ticker: 'AMZN',
-    qty: 2,
+    quantity: 2,
     userId: 1,
   },
   {
     ticker: 'ZM',
-    qty: 5,
+    quantity: 2,
     userId: 1,
   },
   {
     ticker: 'AAPL',
-    qty: 2,
+    quantity: 1,
     userId: 2,
   },
   {
     ticker: 'FB',
-    qty: 3,
+    quantity: 3,
     userId: 2,
   },
 ];

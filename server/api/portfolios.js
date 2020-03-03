@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const Axios = require('axios');
+
 const Portfolio = require('../models/portfolios');
+const User = require('../models/users');
 
 router.use(express.json());
 
@@ -49,19 +52,43 @@ router.get('/:userId/:ticker', async (req, res) => {
   }
 });
 
+// User buys a stock
 router.post('/:userId', async (req, res) => {
   const userId = req.params.userId;
   const ticker = req.body.ticker;
-  const quantity = req.body.quantity;
+  const quantity = Number(req.body.quantity);
 
   try {
-    const newStock = await Portfolio.create({
-      ticker,
-      quantity,
-      userId,
-    });
+    const stock = await Axios.get(`http://localhost:8080/api/stocks/${ticker}`);
+    const latestPrice = stock.data.price;
+    const transValue = latestPrice * quantity;
+    const balance = await Axios.put(
+      `http://localhost:8080/api/users/${userId}`,
+      {
+        transValue,
+      }
+    );
+    if (balance.data === 'User has insufficient funds') {
+      res.send('User has insufficient funds');
+    } else {
+      const stockExists = await Portfolio.findOne({
+        where: { ticker },
+      });
 
-    res.json(newStock);
+      if (stockExists) {
+        const newQuantity = stockExists.quantity + quantity;
+
+        stockExists.update({ quantity: newQuantity });
+        res.status(200).send(stockExists);
+      } else {
+        const newStock = await Portfolio.create({
+          ticker,
+          quantity,
+          userId,
+        });
+        res.status(200).send(newStock);
+      }
+    }
   } catch (error) {
     console.log(error);
   }
