@@ -1,6 +1,7 @@
 'use strict';
 
-const { db, User, Portfolio } = require('./server/db');
+const { db } = require('./server/db');
+const { Portfolio, User, Transaction, Ticker } = require('./server/models');
 const { green, red } = require('chalk');
 
 const users = [
@@ -18,25 +19,55 @@ const users = [
   },
 ];
 
+const tickers = [
+  { name: 'AMZN' },
+  { name: 'FB' },
+  { name: 'ZM' },
+  { name: 'APPL' },
+];
+
+const transactions = [
+  {
+    userId: 1,
+    tickerId: 1,
+    price: 200,
+    qty: 1,
+  },
+  {
+    tickerId: 3,
+    userId: 1,
+    price: 100,
+    qty: 2,
+  },
+  {
+    tickerId: 4,
+    userId: 2,
+    price: 30,
+    qty: 5,
+  },
+  {
+    tickerId: 2,
+    userId: 2,
+    price: 75,
+    qty: 2,
+  },
+];
+
 const portfolios = [
   {
-    ticker: 'AMZN',
-    quantity: 2,
+    userId: 1,
+    tickerId: 1,
+  },
+  {
+    tickerId: 3,
     userId: 1,
   },
   {
-    ticker: 'ZM',
-    quantity: 2,
-    userId: 1,
-  },
-  {
-    ticker: 'AAPL',
-    quantity: 1,
+    tickerId: 4,
     userId: 2,
   },
   {
-    ticker: 'FB',
-    quantity: 3,
+    tickerId: 2,
     userId: 2,
   },
 ];
@@ -48,12 +79,18 @@ async function seed() {
   await Promise.all(
     users.map(user => {
       return User.create(user);
+    }),
+    tickers.map(ticker => {
+      return Ticker.create(ticker);
     })
   );
 
   await Promise.all(
     portfolios.map(portfolio => {
       return Portfolio.create(portfolio);
+    }),
+    transactions.map(transaction => {
+      return Transaction.create(transaction);
     })
   );
 

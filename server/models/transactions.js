@@ -1,11 +1,14 @@
 const Sequelize = require('sequelize');
 const db = require('../db/db');
 
-const Portfolio = db.define('portfolio', {
+const Transactions = db.define('transactions', {
   quantity: {
     type: Sequelize.INTEGER,
     defaultValue: 0,
   },
+  price: {
+    type: Sequelize.FLOAT,
+  },
 });
 
-module.exports = Portfolio;
+module.exports = Transactions;
