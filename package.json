@@ -4,6 +4,8 @@
   "description": "Tech Talent Pipeline Submission Emma Munley ",
   "main": "index.js",
   "scripts": {
+    "deploy": "script/deploy",
+    "heroku-token": "script/deploy/encrypt-heroku-auth-token.js",
     "seed": "node seed.js",
     "start": "node server",
     "start:dev": "npm run start-server node --inspect=5858 server",
