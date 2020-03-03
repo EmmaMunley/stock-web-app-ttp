@@ -6,11 +6,13 @@
   "scripts": {
     "seed": "node seed.js",
     "start": "node server",
-    "start:dev": "NODE_ENV='development' & NODE_ENV='development' npm run start-server node --inspect=5858 server",
-    "start-server": "nodemon server -e html,js,scss --ignore public --ignore client"
+    "start:dev": "npm run start-server node --inspect=5858 server",
+    "start-server": "nodemon server -e html,js,scss --ignore public --ignore client",
+    "build-watch": "webpack -w"
   },
   "author": "Emma Munley",
   "dependencies": {
+    "@babel/polyfill": "^7.8.3",
     "axios": "^0.19.2",
     "chalk": "^3.0.0",
     "connect-session-sequelize": "^6.0.0",
@@ -22,6 +24,35 @@
     "isomorphic-fetch": "^2.2.1",
     "morgan": "^1.9.1",
     "pg": "^7.9.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-drop-down": "^1.0.3",
+    "react-dropdown": "^1.6.4",
+    "react-dropdown-select": "^3.6.3",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^5.0.1",
+    "react-select": "^3.0.8",
+    "redux": "^4.0.0",
+    "redux-devtools-extension": "^2.13.7",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.2.0",
     "sequelize": "^5.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-eslint": "^8.2.3",
+    "babel-loader": "^8.0.6",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^0.28.11",
+    "eslint": "^6.2.2",
+    "eslint-plugin-react": "^7.8.2",
+    "nodemon": "^1.19.1",
+    "style-loader": "^0.21.0",
+    "volleyball": "^1.5.1",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.7"
   }
 }
