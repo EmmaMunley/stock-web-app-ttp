@@ -1,13 +1,19 @@
 const express = require('express');
+const Sequelize = require('sequelize');
 const router = express.Router();
 const Axios = require('axios');
-
-const Portfolio = require('../models/portfolios');
-const User = require('../models/users');
+const pkg = require('../../package.json');
+const { Transaction, User, Ticker, Portfolio } = require('../models');
+const db = new Sequelize(
+  process.env.DATABASE_URL || `postgres://localhost:5432/${pkg.name}`,
+  {
+    logging: false,
+  }
+);
 
 router.use(express.json());
 
-// gets all stocks in portfolio specified user:
+// gets all transactions for a specified user:
 router.get('/:userId', async (req, res) => {
   const userId = req.params.userId;
 
@@ -15,109 +21,98 @@ router.get('/:userId', async (req, res) => {
     res.send('no user defined!');
   } else {
     try {
-      const stocks = await Portfolio.findAll({
+      const transactions = await Transaction.findAll({
         where: { userId },
       });
-      if (!stocks) {
+      if (!transactions) {
         res.status(404).send('No stocks in your portfolio!');
       } else {
-        res.send(stocks);
+        res.send(transactions);
       }
     } catch (error) {
       console.log(error);
     }
   }
 });
-
-// gets specific stock in portfolio specified user:
-router.get('/:userId/:ticker', async (req, res) => {
-  const userId = req.params.userId;
-  const ticker = req.params.ticker;
-
-  if (!userId || !ticker) {
-    res.send('please enter a user Id and ticker');
-  } else {
-    try {
-      const stocks = await Portfolio.findAll({
-        where: { userId, ticker },
-      });
-      if (!stocks) {
-        res.status(404).send(`${ticker} is not part of your portfolio`);
-      } else {
-        res.send(stocks);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-});
-
-// User buys a stock
-router.post('/:userId', async (req, res) => {
+// post a transaction for if a use buys a stock
+router.post('/:userId', async (req, res, next) => {
   const userId = req.params.userId;
   const ticker = req.body.ticker;
   const quantity = Number(req.body.quantity);
-
   try {
-    const stock = await Axios.get(`http://localhost:8080/api/stocks/${ticker}`);
-    const latestPrice = stock.data.price;
-    const transValue = latestPrice * quantity;
-    const balance = await Axios.put(
-      `http://localhost:8080/api/users/${userId}`,
-      {
-        transValue,
+    const result = await db.transaction(async t => {
+      // get current stock price
+      const response = await Axios.get(
+        `https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=${process.env.IEX_API_TOKEN}`,
+        { transaction: t }
+      );
+
+      const { latestPrice } = response.data;
+      // get users current balance
+      const transVal = latestPrice * quantity;
+      const user = await User.findByPk(userId, { transaction: t });
+      const canBuyStock = transVal <= user.balance;
+
+      // update user balance
+      if (canBuyStock) {
+        const newBalance = user.dataValues.balance - transVal;
+        await user.update({ balance: newBalance }, { transaction: t });
+      } else {
+        res.send('User has insufficient funds');
       }
-    );
-    if (balance.data === 'User has insufficient funds') {
-      res.send('User has insufficient funds');
-    } else {
-      const stockExists = await Portfolio.findOne({
-        where: { ticker },
+
+      let foundTicker = await Ticker.findOne({
+        where: { name: ticker },
       });
 
-      if (stockExists) {
-        const newQuantity = stockExists.quantity + quantity;
+      if (foundTicker === null) {
+        foundTicker = await Ticker.create({ name: ticker }, { transaction: t });
+      }
 
-        stockExists.update({ quantity: newQuantity });
-        res.status(200).send(stockExists);
-      } else {
-        const newStock = await Portfolio.create({
-          ticker,
+      const tickerId = foundTicker.dataValues.id;
+
+      const newTransaction = await Transaction.create(
+        {
+          tickerId,
           quantity,
           userId,
-          priceBought: latestPrice,
-        });
-        res.status(200).send(newStock);
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
+          price: latestPrice,
+        },
+        { transaction: t }
+      );
 
-router.delete('/:userId/:ticker', async (req, res, next) => {
-  const userId = req.params.userId;
-  const ticker = req.params.ticker;
+      // check to see if stock exists already in user's portfolio
 
-  try {
-    const stock = await Portfolio.findOne({
-      where: {
-        ticker,
+      let containsDuplicateStocks = await Portfolio.findOne({
+        where: tickerId,
         userId,
-      },
+      });
+      // update the quantity of existing stock in portfolio
+      if (containsDuplicateStocks !== null) {
+        console.log('need to update QTY');
+        const updatedQuantity =
+          containsDuplicateStocks.dataValues.quantity + quantity;
+        await containsDuplicateStocks.update(
+          { quantity: updatedQuantity },
+          { transaction: t }
+        );
+      } else {
+        await Portfolio.create(
+          {
+            tickerId,
+            userId,
+            quantity,
+          },
+          { transaction: t }
+        );
+      }
+      return newTransaction;
     });
-
-    if (stock) {
-      await stock.destroy();
-      res.status(204).end();
-      console.log('stock was deleted');
-    } else {
-      console.log('stock could not be updated');
-      res.status(404);
-    }
-  } catch (err) {
-    console.error(err);
-    next(err);
+    res.send(result);
+  } catch (error) {
+    // If the execution reaches this line, an error occurred.
+    // The transaction has already been rolled back automatically by Sequelize!
+    console.error(error);
   }
 });
 

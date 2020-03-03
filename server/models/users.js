@@ -45,6 +45,13 @@ User.prototype.correctPassword = function(candidatePwd) {
 /**
  * classMethods
  */
+
+User.updateBalance = function(transVal) {
+  console.log('transVal:', transVal);
+  const newBalance = User.balance - transVal;
+  User.balance = newBalance;
+};
+
 User.generateSalt = function() {
   return crypto.randomBytes(16).toString('base64');
 };

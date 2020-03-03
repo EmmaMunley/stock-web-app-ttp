@@ -3,6 +3,7 @@ module.exports = router;
 
 router.use('/stocks', require('./stocks'));
 router.use('/portfolios', require('./portfolios'));
+router.use('/transactions', require('./transactions'));
 router.use('/users', require('./users'));
 
 router.use((req, res, next) => {

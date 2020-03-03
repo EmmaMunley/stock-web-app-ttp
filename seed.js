@@ -31,25 +31,31 @@ const transactions = [
     userId: 1,
     tickerId: 1,
     price: 200,
-    qty: 1,
+    quantity: 1,
   },
   {
     tickerId: 3,
     userId: 1,
     price: 100,
-    qty: 2,
+    quantity: 2,
   },
   {
     tickerId: 4,
     userId: 2,
     price: 30,
-    qty: 5,
+    quantity: 5,
   },
   {
     tickerId: 2,
     userId: 2,
     price: 75,
-    qty: 2,
+    quantity: 2,
+  },
+  {
+    userId: 1,
+    tickerId: 1,
+    price: 200,
+    quantity: 1,
   },
 ];
 
@@ -57,18 +63,22 @@ const portfolios = [
   {
     userId: 1,
     tickerId: 1,
+    quantity: 2,
   },
   {
     tickerId: 3,
     userId: 1,
+    quantity: 1,
   },
   {
     tickerId: 4,
     userId: 2,
+    quantity: 1,
   },
   {
     tickerId: 2,
     userId: 2,
+    quantity: 1,
   },
 ];
 
