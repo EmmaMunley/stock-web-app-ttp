@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPortfolio } from '../store/portfolio';
+import { getTransactions } from '../store/transactions';
 
-class Portfolio extends React.Component {
+class Transactions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,16 +12,16 @@ class Portfolio extends React.Component {
   }
 
   async componentDidMount() {
-    await this.props.getPortfolio(this.props.user.id);
+    await this.props.getTransactions(this.props.user.id);
     this.setState({ loaded: true });
   }
 
   renderRows() {
-    return this.props.portfolio.map(stock => (
-      <tr key={stock.ticker}>
-        <td className="left-align">{stock.ticker}</td>
-        <td className="right-align">{stock.quantity}</td>
-        <td className="right-align">${stock.price}</td>
+    return this.props.transactions.map(trans => (
+      <tr key={trans.ticker}>
+        <td className="left-align">{trans.ticker.name}</td>
+        <td className="right-align">{trans.quantity}</td>
+        <td className="right-align">${trans.price}</td>
       </tr>
     ));
   }
@@ -33,12 +33,12 @@ class Portfolio extends React.Component {
 
     return (
       <div>
-        <h1>MyPortfolio</h1>
+        <h1>My Transactions</h1>
         <table>
           <tr>
             <th className="left-align">Ticker</th>
             <th className="right-align"># of Shares</th>
-            <th className="right-align">Current Price</th>
+            <th className="right-align">Total</th>
           </tr>
           {this.renderRows()}
         </table>
@@ -51,13 +51,14 @@ const mapStateToProps = state => {
   return {
     user: state.user,
     portfolio: state.portfolio,
+    transactions: state.transactions,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    getPortfolio: userId => dispatch(getPortfolio(userId)),
+    getTransactions: userId => dispatch(getTransactions(userId)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Portfolio);
+export default connect(mapStateToProps, mapDispatchToProps)(Transactions);

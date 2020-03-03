@@ -22,8 +22,10 @@ router.get('/:userId', async (req, res) => {
   } else {
     try {
       const transactions = await Transaction.findAll({
+        include: [{ model: Ticker }],
         where: { userId },
       });
+
       if (!transactions) {
         res.status(404).send('No stocks in your portfolio!');
       } else {
