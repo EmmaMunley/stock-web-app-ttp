@@ -1,19 +1,49 @@
 const express = require('express');
 const router = express.Router();
-const Portfolio = require('../models/portfolios');
+const { Portfolio, Ticker } = require('../models/');
+const Axios = require('axios');
 
 router.use(express.json());
 
-// gets all stocks in portfolio specified user:
+// gets all stocks in portfolio for a specified user & current price
 router.get('/:userId', async (req, res) => {
   const userId = req.params.userId;
 
   try {
-    const portfolio = await Portfolio.findByPk(userId);
+    // get user portfolio including stocks
+    const portfolio = await Portfolio.findAll({
+      include: [{ model: Ticker }],
+      where: {
+        userId,
+      },
+    });
+    // get the current stocks prices
+    let formattedStocks = '';
+    const stockNames = Object.values(portfolio).forEach(p => {
+      formattedStocks += `${p.dataValues.ticker.name},`;
+    });
+    formattedStocks = formattedStocks.substr(0, formattedStocks.length - 1);
+
+    const stocks = await Axios.get(
+      `https://cloud.iexapis.com/stable/stock/market/batch?symbols=${formattedStocks}&types=quote&token=${process.env.IEX_API_TOKEN}`
+    );
+
+    const stockPrices = {};
+
+    Object.values(stocks.data).forEach(stock => {
+      stockPrices[stock.quote.symbol] = stock.quote.latestPrice;
+    });
+
+    const result = Object.values(portfolio).map(p => ({
+      quantity: p.dataValues.quantity,
+      ticker: p.dataValues.ticker.name,
+      price: stockPrices[p.dataValues.ticker.name],
+    }));
+
     if (!portfolio) {
-      res.status(404).send('No stocks in your portfolio!');
+      res.send('Portfolio could not be found');
     } else {
-      res.json(portfolio);
+      res.json(result);
     }
   } catch (error) {
     console.log(error);
@@ -38,48 +68,5 @@ router.get('/:userId/:ticker', async (req, res) => {
     console.log(error);
   }
 });
-
-// User buys a stock
-// router.post('/:userId', async (req, res) => {
-//   const userId = req.params.userId;
-//   const ticker = req.body.ticker;
-//   const quantity = Number(req.body.quantity);
-
-//   try {
-//     const stock = await Axios.get(`http://localhost:8080/api/stocks/${ticker}`);
-//     const latestPrice = stock.data.price;
-//     const transValue = latestPrice * quantity;
-//     const balance = await Axios.put(
-//       `http://localhost:8080/api/users/${userId}`,
-//       {
-//         transValue,
-//       }
-//     );
-//     if (balance.data === 'User has insufficient funds') {
-//       res.send('User has insufficient funds');
-//     } else {
-//       const stockExists = await Portfolio.findOne({
-//         where: { ticker },
-//       });
-
-//       if (stockExists) {
-//         const newQuantity = stockExists.quantity + quantity;
-
-//         stockExists.update({ quantity: newQuantity });
-//         res.status(200).send(stockExists);
-//       } else {
-//         const newStock = await Portfolio.create({
-//           ticker,
-//           quantity,
-//           userId,
-//           priceBought: latestPrice,
-//         });
-//         res.status(200).send(newStock);
-//       }
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
 
 module.exports = router;

@@ -89,7 +89,6 @@ router.post('/:userId', async (req, res, next) => {
       });
       // update the quantity of existing stock in portfolio
       if (containsDuplicateStocks !== null) {
-        console.log('need to update QTY');
         const updatedQuantity =
           containsDuplicateStocks.dataValues.quantity + quantity;
         await containsDuplicateStocks.update(

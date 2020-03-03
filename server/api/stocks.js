@@ -12,6 +12,8 @@ router.get(`/`, async (req, res, next) => {
       company: stock.quote.companyName,
       ticket: stock.quote.symbol,
       price: stock.quote.latestPrice,
+      open: stock.quote.open,
+      close: stock.quote.close,
     }));
 
     if (!!stocks) {
