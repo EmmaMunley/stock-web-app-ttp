@@ -1,0 +1,26 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-weight: normal;
+  color: black;
+}
+
+table {
+  table-layout: auto;
+}
+
+th {
+  padding: 25px;
+  background-color: lightblue;
+}
+td {
+  padding: 10px;
+  background-color: lightgray;
+}
+
+.left-align {
+  text-align: left;
+}
+.right-align {
+  text-align: right;
+}
