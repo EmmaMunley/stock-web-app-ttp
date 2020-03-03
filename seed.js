@@ -1,21 +1,20 @@
 'use strict';
 
-const { db } = require('./server/db');
-const { Portfolio, User, Transaction, Ticker } = require('./server/models');
+const { db, Portfolio, User, Transaction, Ticker } = require('./server/db');
 const { green, red } = require('chalk');
 
 const users = [
   {
-    firstName: 'Emma',
-    lastName: 'Munley',
+    name: 'Emma',
     email: 'emma@gmail.com',
     password: '1234',
+    balance: 4400,
   },
   {
-    firstName: 'Test',
-    lastName: 'Test',
+    name: 'Test',
     email: 'Test@gmail.com',
     password: '1234',
+    balance: 4500,
   },
 ];
 
