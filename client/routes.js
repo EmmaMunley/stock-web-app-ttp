@@ -8,6 +8,7 @@ import {
   Signup,
   Portfolio,
   Transactions,
+  BuyStockForm,
   AllStocks,
 } from './components';
 import { me } from './store';
@@ -37,6 +38,7 @@ class Routes extends Component {
             {/* Routes placed here are only available after logging in */}
             <Route exact path="/portfolio" component={Portfolio} />
             <Route exact path="/transactions" component={Transactions} />
+            <Route exact path="/buy" component={BuyStockForm} />{' '}
           </Switch>
         )}
       </Switch>
