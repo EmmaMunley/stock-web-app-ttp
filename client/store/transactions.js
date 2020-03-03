@@ -1,15 +1,19 @@
 import axios from 'axios';
+import portfolio from './portfolio';
 
 /**
  * ACTION TYPES
  */
 const GOT_TRANSACTIONS = 'GOT_TRANSACTIONS';
 const MADE_TRANSACTION = 'MADE_TRANSACTION';
-
+const ERROR = 'ERROR';
 /**
  * INITIAL STATE
  */
-const initalState = [];
+const initalState = {
+  transactions: [],
+  error: null,
+};
 
 /**
  * ACTION CREATORS
@@ -19,9 +23,14 @@ const gotTransactions = transaction => ({
   transaction,
 });
 
-const madeTransaction = transaction => ({
+const madeTransaction = portfolio => ({
   type: MADE_TRANSACTION,
-  transaction,
+  portfolio,
+});
+
+const error = message => ({
+  type: ERROR,
+  message,
 });
 
 /**
@@ -44,12 +53,10 @@ export const makeTransaction = (userId, ticker, quantity) => async dispatch => {
   };
   try {
     const res = await axios.post(`/api/transactions/${userId}`, body);
-    console.log('res?', res);
     const data = res.data;
-    console.log('data?', data);
     return dispatch(madeTransaction(data));
   } catch (err) {
-    console.error(err);
+    return dispatch(error('Insufficient funds'));
   }
 };
 
@@ -59,9 +66,11 @@ export const makeTransaction = (userId, ticker, quantity) => async dispatch => {
 export default function(state = initalState, action) {
   switch (action.type) {
     case GOT_TRANSACTIONS:
-      return action.transaction;
+      return { transactions: action.transaction, error: null };
+    case ERROR:
+      return { ...state, error: action.message };
     case MADE_TRANSACTION:
-      return action.transaction;
+      return { ...state, error: null };
     default:
       return state;
   }

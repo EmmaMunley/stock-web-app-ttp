@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter, Route, Switch } from 'react-router-dom';
+import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {
-  Homepage,
-  Login,
-  Signup,
-  Portfolio,
-  Transactions,
-  BuyStockForm,
-  AllStocks,
-} from './components';
+import { Login, Signup, TransactionsPage, PortfolioPage } from './components';
 import { me } from './store';
 
 class Routes extends Component {
@@ -24,23 +16,18 @@ class Routes extends Component {
     return (
       <Switch>
         {/* Routes placed here are available to all visitors */}
-        <Route exact path="/" component={Homepage} />
-        <Route exact path="/stocks" component={AllStocks} />
-        <Route exact path="/login" component={Login} />
+        <Route exact path="/">
+          {isLoggedIn ? <Redirect to="/portfolio" /> : <Login />}
+        </Route>
         <Route exact path="/signup" component={Signup} />
-
-        {/* <Route exact path="/login" component={Login} />
-        <Route exact path="/signup" component={Signup} /> */}
-        {/* <Route exact path="/stocks" component={AllProducts} /> */}
-
         {isLoggedIn && (
           <Switch>
             {/* Routes placed here are only available after logging in */}
-            <Route exact path="/portfolio" component={Portfolio} />
-            <Route exact path="/transactions" component={Transactions} />
-            <Route exact path="/buy" component={BuyStockForm} />{' '}
+            <Route exact path="/portfolio" component={PortfolioPage} />
+            <Route exact path="/transactions" component={TransactionsPage} />
           </Switch>
         )}
+        {/* <Route>{isLoggedIn ? <Redirect to="/portfolio" /> : <Login />}</Route> */}
       </Switch>
     );
   }

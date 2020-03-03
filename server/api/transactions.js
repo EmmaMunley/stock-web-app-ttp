@@ -14,7 +14,7 @@ const db = new Sequelize(
 router.use(express.json());
 
 // gets all transactions for a specified user:
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', async (req, res, next) => {
   const userId = req.params.userId;
 
   if (!userId) {
@@ -32,7 +32,8 @@ router.get('/:userId', async (req, res) => {
         res.send(transactions);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      next(error);
     }
   }
 });
@@ -42,7 +43,7 @@ router.post('/:userId', async (req, res, next) => {
   const ticker = req.body.ticker;
   const quantity = Number(req.body.quantity);
   try {
-    const result = await db.transaction(async t => {
+    await db.transaction(async t => {
       // get current stock price
       const response = await Axios.get(
         `https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=${process.env.IEX_API_TOKEN}`,
@@ -60,7 +61,7 @@ router.post('/:userId', async (req, res, next) => {
         const newBalance = user.dataValues.balance - transVal;
         await user.update({ balance: newBalance }, { transaction: t });
       } else {
-        res.send('User has insufficient funds');
+        return res.status(500);
       }
 
       let foundTicker = await Ticker.findOne({
@@ -85,36 +86,70 @@ router.post('/:userId', async (req, res, next) => {
 
       // check to see if stock exists already in user's portfolio
 
-      let containsDuplicateStocks = await Portfolio.findOne({
-        where: tickerId,
-        userId,
+      let portfolio = await Portfolio.findOne({
+        where: {
+          tickerId,
+          userId,
+        },
       });
       // update the quantity of existing stock in portfolio
-      if (containsDuplicateStocks !== null) {
-        const updatedQuantity =
-          containsDuplicateStocks.dataValues.quantity + quantity;
-        await containsDuplicateStocks.update(
+      if (portfolio !== null) {
+        const updatedQuantity = portfolio.dataValues.quantity + quantity;
+        await portfolio.update(
           { quantity: updatedQuantity },
           { transaction: t }
         );
       } else {
-        await Portfolio.create(
+        portfolio = await Portfolio.create(
           {
             tickerId,
-            userId,
             quantity,
+            userId,
           },
           { transaction: t }
         );
       }
-      return newTransaction;
     });
+    const result = await getPortfolio(userId);
     res.send(result);
   } catch (error) {
     // If the execution reaches this line, an error occurred.
     // The transaction has already been rolled back automatically by Sequelize!
     console.error(error);
+    next(error);
   }
 });
 
+async function getPortfolio(userId) {
+  const portfolio = await Portfolio.findAll({
+    include: [{ model: Ticker }],
+    where: {
+      userId,
+    },
+  });
+
+  // get the current stocks prices
+  const stockNames = Object.values(portfolio)
+    .map(p => p.dataValues.ticker.name)
+    .join(',');
+
+  const stockPrices = {};
+  if (stockNames.length) {
+    const stocksResponse = await Axios.get(
+      `https://cloud.iexapis.com/stable/stock/market/batch?symbols=${stockNames}&types=quote&token=${process.env.IEX_API_TOKEN}`
+    );
+    const stocks = stocksResponse.data;
+    Object.values(stocks).forEach(stock => {
+      stockPrices[stock.quote.symbol] = stock.quote.latestPrice;
+    });
+  }
+
+  const result = portfolio.map(p => ({
+    quantity: p.dataValues.quantity,
+    ticker: p.dataValues.ticker.name,
+    price: stockPrices[p.dataValues.ticker.name],
+  }));
+
+  return result;
+}
 module.exports = router;

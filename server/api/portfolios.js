@@ -6,9 +6,8 @@ const Axios = require('axios');
 router.use(express.json());
 
 // gets all stocks in portfolio for a specified user & current price
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', async (req, res, next) => {
   const userId = req.params.userId;
-
   try {
     // get user portfolio including stocks
     const portfolio = await Portfolio.findAll({
@@ -17,41 +16,37 @@ router.get('/:userId', async (req, res) => {
         userId,
       },
     });
-    // get the current stocks prices
-    let formattedStocks = '';
-    const stockNames = Object.values(portfolio).forEach(p => {
-      formattedStocks += `${p.dataValues.ticker.name},`;
-    });
-    formattedStocks = formattedStocks.substr(0, formattedStocks.length - 1);
 
-    const stocks = await Axios.get(
-      `https://cloud.iexapis.com/stable/stock/market/batch?symbols=${formattedStocks}&types=quote&token=${process.env.IEX_API_TOKEN}`
-    );
+    const stockNames = Object.values(portfolio)
+      .map(p => p.dataValues.ticker.name)
+      .join(',');
 
     const stockPrices = {};
+    if (stockNames.length) {
+      const stocksResponse = await Axios.get(
+        `https://cloud.iexapis.com/stable/stock/market/batch?symbols=${stockNames}&types=quote&token=${process.env.IEX_API_TOKEN}`
+      );
+      const stocks = stocksResponse.data;
+      Object.values(stocks).forEach(stock => {
+        stockPrices[stock.quote.symbol] = stock.quote.latestPrice;
+      });
+    }
 
-    Object.values(stocks.data).forEach(stock => {
-      stockPrices[stock.quote.symbol] = stock.quote.latestPrice;
-    });
-
-    const result = Object.values(portfolio).map(p => ({
+    const result = portfolio.map(p => ({
       quantity: p.dataValues.quantity,
       ticker: p.dataValues.ticker.name,
       price: stockPrices[p.dataValues.ticker.name],
     }));
 
-    if (!portfolio) {
-      res.send('Portfolio could not be found');
-    } else {
-      res.json(result);
-    }
+    res.json(result);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    next(error);
   }
 });
 
 // gets specific stock in portfolio specified user:
-router.get('/:userId/:ticker', async (req, res) => {
+router.get('/:userId/:ticker', async (req, res, next) => {
   const userId = req.params.userId;
   const ticker = req.params.ticker;
 
@@ -65,7 +60,8 @@ router.get('/:userId/:ticker', async (req, res) => {
       res.send(stocks);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    next(error);
   }
 });
 

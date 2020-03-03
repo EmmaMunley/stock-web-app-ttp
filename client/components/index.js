@@ -1,6 +1,6 @@
-export { default as Homepage } from './homepage';
-export { Login, Signup } from './authForm';
-export { default as Portfolio } from './portfolio';
-export { default as Transactions } from './transactions';
-export { default as AllStocks } from './allStocks';
-export { default as BuyStockForm } from './buyStockForm';
+import PortfolioPage from './portfolioPage';
+import Navbar from './navbar';
+import { Login, Signup } from './authForm';
+import TransactionsPage from './transactionsPage';
+
+export { PortfolioPage, Navbar, Login, Signup, TransactionsPage };

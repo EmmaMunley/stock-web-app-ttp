@@ -4,6 +4,7 @@ import axios from 'axios';
  * ACTION TYPES
  */
 const GOT_PORTFOLIO = 'GOT_PORTFOLIO';
+const MADE_TRANSACTION = 'MADE_TRANSACTION';
 
 /**
  * INITIAL STATE
@@ -37,6 +38,8 @@ export const getPortfolio = userId => async dispatch => {
 export default function(state = initalState, action) {
   switch (action.type) {
     case GOT_PORTFOLIO:
+      return action.portfolio;
+    case MADE_TRANSACTION:
       return action.portfolio;
     default:
       return state;

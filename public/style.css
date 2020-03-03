@@ -5,17 +5,75 @@ body {
   color: black;
 }
 
-table {
-  table-layout: auto;
+button {
+  width: 200px;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 16px;
+  border-radius: 18px;
+  box-shadow: none;
+  background: #2ecb70;
+  background-image: linear-gradient(180deg, #3fd37d 0%, #2ecb70 100%);
+  border: none;
+  display: inline-block;
+  color: white;
+  text-decoration: none;
+  padding: 0 18px;
+  height: 36px;
+  line-height: 35px;
+  text-align: center;
+  margin: 15px;
 }
 
+form {
+  display: flex;
+  flex-flow: column;
+  margin: 5%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+  align-items: center;
+}
+
+input {
+  width: 250px;
+  color: black;
+  border-bottom: 1px solid black;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: GT-America-Standard, 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  font-size: 16px;
+  padding: 5px;
+  margin: 5px;
+}
+table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid black;
+  width: 800px;
+}
 th {
-  padding: 25px;
-  background-color: lightblue;
+  padding: 5px;
+  border: 1px solid black;
+  font-size: 18px;
 }
 td {
-  padding: 10px;
-  background-color: lightgray;
+  padding: 5px;
+  border: 1px solid black;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+.row {
+  display: flex;
+  flex-direction: row;
 }
 
 .left-align {
@@ -23,4 +81,49 @@ td {
 }
 .right-align {
   text-align: right;
+}
+
+.nav {
+  display: flex;
+  padding: 10px;
+  align-items: center;
+}
+.nav-links {
+  font-size: 1vw;
+  text-decoration: none;
+  color: black;
+  padding-left: 20px;
+  align-items: center;
+  text-align: left;
+  display: flex;
+}
+
+.right-nav {
+  display: flex;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.qty-input {
+  text-align: center;
+  align-self: center;
+  border-radius: 10px;
+  width: 75px;
+  height: 6vh;
+  font-size: 1vw;
+  border: 1px solid black;
+  color: black;
+  justify-self: center;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+  text-align: center;
+}
+
+#myPortfolio {
+  justify-content: space-between;
 }

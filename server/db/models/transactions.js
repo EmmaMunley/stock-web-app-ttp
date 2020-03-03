@@ -7,7 +7,7 @@ const Transactions = db.define('transactions', {
     defaultValue: 0,
   },
   price: {
-    type: Sequelize.FLOAT,
+    type: Sequelize.DECIMAL(10, 2),
   },
 });
 

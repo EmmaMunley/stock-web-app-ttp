@@ -2,28 +2,28 @@ const router = require('express').Router();
 const Axios = require('axios');
 
 // get all stocks
-router.get(`/`, async (req, res, next) => {
-  try {
-    const response = await Axios.get(
-      `https://cloud.iexapis.com/stable/stock/market/batch?symbols=dow,nasdaq,sandp,goog,aapl,dis,msft,fb,tsla&types=quote&token=${process.env.IEX_API_TOKEN}`
-    );
+// router.get(`/`, async (req, res, next) => {
+//   try {
+//     const response = await Axios.get(
+//       `https://cloud.iexapis.com/stable/stock/market/batch?symbols=dow,nasdaq,sandp,goog,aapl,dis,msft,fb,tsla&types=quote&token=${process.env.IEX_API_TOKEN}`
+//     );
 
-    const stocks = Object.values(response.data).map(stock => ({
-      company: stock.quote.companyName,
-      ticket: stock.quote.symbol,
-      price: stock.quote.latestPrice,
-      open: stock.quote.open,
-      close: stock.quote.close,
-    }));
+//     const stocks = Object.values(response.data).map(stock => ({
+//       company: stock.quote.companyName,
+//       ticket: stock.quote.symbol,
+//       price: stock.quote.latestPrice,
+//       open: stock.quote.open,
+//       close: stock.quote.close,
+//     }));
 
-    if (!!stocks) {
-      res.json(stocks);
-    }
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
+//     if (!!stocks) {
+//       res.json(stocks);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     next(error);
+//   }
+// });
 
 // get specific stock
 router.get(`/:ticker`, async (req, res, next) => {
