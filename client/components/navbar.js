@@ -8,15 +8,12 @@ import { logout } from '../store';
 const Navbar = props => {
   const { handleClick, isLoggedIn, user } = props;
   const email = user.email;
-  const name = user.firstName;
+  const name = user.name;
   const userId = user.id;
   return (
     <div className="column">
       <div className="nav space-between">
-        <Link to="/">
-          <p>logo placeholder</p>
-          {/* <img id="logo" src="/logo.png" /> */}
-        </Link>
+        {isLoggedIn ? <p>Welcome {user.name}</p> : null}
 
         <div>
           {isLoggedIn ? (
