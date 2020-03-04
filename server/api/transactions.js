@@ -3,6 +3,8 @@ const Sequelize = require('sequelize');
 const router = express.Router();
 const Axios = require('axios');
 const pkg = require('../../package.json');
+const { getPortfolio } = require('./utils');
+
 const { Transaction, User, Ticker, Portfolio } = require('../db');
 const db = new Sequelize(
   process.env.DATABASE_URL || `postgres://localhost:5432/${pkg.name}`,
@@ -97,7 +99,6 @@ router.post('/:userId', async (req, res, next) => {
         const updatedQuantity =
           Number(portfolio.dataValues.quantity) + Number(quantity);
 
-        console.log('updatedQty', updatedQuantity);
         await portfolio.update(
           { quantity: updatedQuantity },
           { transaction: t }
@@ -123,36 +124,4 @@ router.post('/:userId', async (req, res, next) => {
   }
 });
 
-async function getPortfolio(userId) {
-  const portfolio = await Portfolio.findAll({
-    include: [{ model: Ticker }],
-    where: {
-      userId,
-    },
-  });
-
-  // get the current stocks prices
-  const stockNames = Object.values(portfolio)
-    .map(p => p.dataValues.ticker.name)
-    .join(',');
-
-  const stockPrices = {};
-  if (stockNames.length) {
-    const stocksResponse = await Axios.get(
-      `https://cloud.iexapis.com/stable/stock/market/batch?symbols=${stockNames}&types=quote&token=${process.env.IEX_API_TOKEN}`
-    );
-    const stocks = stocksResponse.data;
-    Object.values(stocks).forEach(stock => {
-      stockPrices[stock.quote.symbol] = stock.quote.latestPrice;
-    });
-  }
-
-  const result = portfolio.map(p => ({
-    quantity: p.dataValues.quantity,
-    ticker: p.dataValues.ticker.name,
-    price: stockPrices[p.dataValues.ticker.name],
-  }));
-
-  return result;
-}
 module.exports = router;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPortfolio, makeTransaction } from '../store';
+import { getPortfolio, makeTransaction, me } from '../store';
 import BuyStockForm from './buyStockForm';
 import Portfolio from './portfolio';
 
@@ -27,7 +27,7 @@ class PortfolioPage extends React.Component {
     const totalPortfolioValue = this.calculatePortfolioValue(
       this.props.portfolio
     );
-    console.log(totalPortfolioValue);
+
     if (!this.state.loaded) {
       return null;
     }
@@ -45,6 +45,7 @@ class PortfolioPage extends React.Component {
             <BuyStockForm
               className="container"
               balance={this.props.user.balance}
+              reloadBalance={this.props.reloadBalance}
               makeTransaction={this.props.makeTransaction}
               userId={this.props.user.id}
               error={this.props.error}
@@ -69,6 +70,7 @@ const mapDispatchToProps = dispatch => {
     getPortfolio: userId => dispatch(getPortfolio(userId)),
     makeTransaction: (id, ticker, quantity) =>
       dispatch(makeTransaction(id, ticker, quantity)),
+    reloadBalance: userId => dispatch(me(userId)),
   };
 };
 

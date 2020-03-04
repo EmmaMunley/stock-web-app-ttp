@@ -13,6 +13,7 @@ class BuyStockForm extends React.Component {
     const ticker = evt.target.ticker.value;
     const quantity = evt.target.quantity.value;
     await this.props.makeTransaction(userId, ticker, quantity);
+    await this.props.reloadBalance(userId);
   }
 
   render() {

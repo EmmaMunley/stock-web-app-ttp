@@ -136,6 +136,19 @@ td {
   margin: 40px;
   padding: 40px;
 }
+
+.grey {
+  color: grey;
+}
+
+.red {
+  color: red;
+}
+
+.green {
+  color: green;
+}
+
 #myPortfolio {
   justify-content: space-between;
 }
