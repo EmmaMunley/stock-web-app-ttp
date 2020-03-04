@@ -7,7 +7,7 @@
     "deploy": "script/deploy",
     "heroku-token": "script/deploy/encrypt-heroku-auth-token.js",
     "seed": "node seed.js",
-    "start": "node server",
+    "start": "npm run build-watch & npm run start-server",
     "start:dev": "npm run start-server node --inspect=5858 server",
     "start-server": "nodemon server -e html,js,scss --ignore public --ignore client",
     "build-watch": "webpack -w"
@@ -26,7 +26,7 @@
     "isomorphic-fetch": "^2.2.1",
     "morgan": "^1.9.1",
     "passport": "^0.4.1",
-    "pg": "^7.9.0",
+    "pg": "^7.18.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-drop-down": "^1.0.3",
