@@ -2,7 +2,7 @@ import React from 'react';
 
 const Transactions = props => {
   return (
-    <div>
+    <div className=" column center">
       <h1>My Transactions</h1>
       <table>
         <tr>

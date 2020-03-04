@@ -10,6 +10,7 @@ class PortfolioPage extends React.Component {
     this.state = {
       loaded: false,
     };
+    this.calculatePortfolioValue = this.calculatePortfolioValue.bind(this);
   }
   async componentDidMount() {
     const userId = this.props.user.id;
@@ -17,20 +18,38 @@ class PortfolioPage extends React.Component {
 
     this.setState({ loaded: true });
   }
+  calculatePortfolioValue(portfolio) {
+    let sum = 0;
+    portfolio.forEach(stock => (sum += stock.quantity * stock.price));
+    return sum;
+  }
   render() {
+    const totalPortfolioValue = this.calculatePortfolioValue(
+      this.props.portfolio
+    );
+    console.log(totalPortfolioValue);
     if (!this.state.loaded) {
       return <div>loading</div>;
     }
 
     return (
-      <div className="column">
+      <div className="column center">
         <div className="row" id="myPortfolio">
-          <Portfolio portfolio={this.props.portfolio} />
-          <BuyStockForm
-            makeTransaction={this.props.makeTransaction}
-            userId={this.props.user.id}
-            error={this.props.error}
-          />
+          <div className="container">
+            <Portfolio
+              portfolio={this.props.portfolio}
+              totalPortfolioValue={totalPortfolioValue}
+            />
+          </div>
+          <div className="container">
+            <BuyStockForm
+              className="container"
+              balance={this.props.user.balance}
+              makeTransaction={this.props.makeTransaction}
+              userId={this.props.user.id}
+              error={this.props.error}
+            />
+          </div>
         </div>
       </div>
     );

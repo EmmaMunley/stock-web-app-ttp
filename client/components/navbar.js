@@ -7,9 +7,7 @@ import { logout } from '../store';
 
 const Navbar = props => {
   const { handleClick, isLoggedIn, user } = props;
-  const email = user.email;
-  const name = user.name;
-  const userId = user.id;
+
   return (
     <div className="column">
       <div className="nav space-between">

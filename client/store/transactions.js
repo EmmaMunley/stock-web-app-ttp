@@ -1,5 +1,4 @@
 import axios from 'axios';
-import portfolio from './portfolio';
 
 /**
  * ACTION TYPES

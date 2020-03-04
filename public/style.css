@@ -5,6 +5,10 @@ body {
   color: black;
 }
 
+h1 {
+  font-size: 16px;
+  text-align: center;
+}
 button {
   width: 200px;
   text-transform: uppercase;
@@ -52,7 +56,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
   border: 1px solid black;
-  width: 800px;
+  width: 500px;
 }
 th {
   padding: 5px;
@@ -76,6 +80,9 @@ td {
   flex-direction: row;
 }
 
+.center {
+  align-items: center;
+}
 .left-align {
   text-align: left;
 }
@@ -89,10 +96,11 @@ td {
   align-items: center;
 }
 .nav-links {
-  font-size: 1vw;
+  font-size: 12px;
   text-decoration: none;
   color: black;
-  padding-left: 20px;
+  padding-left: 25px;
+  font-weight: bold;
   align-items: center;
   text-align: left;
   display: flex;
@@ -124,6 +132,10 @@ td {
   text-align: center;
 }
 
+.container {
+  margin: 40px;
+  padding: 40px;
+}
 #myPortfolio {
   justify-content: space-between;
 }

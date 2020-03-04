@@ -1,9 +1,10 @@
 import React from 'react';
 
 const Portfolio = props => {
+  const total = props.totalPortfolioValue;
   return (
     <div>
-      <h1>My Portfolio</h1>
+      <h1>My Portfolio (Total Value: ${total})</h1>
       <table>
         <tr>
           <th className="left-align">Ticker</th>

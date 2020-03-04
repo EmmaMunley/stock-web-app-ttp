@@ -18,10 +18,15 @@ class BuyStockForm extends React.Component {
   render() {
     return (
       <div>
-        <h1>Buy A Stock</h1>
+        <h1>Buy A Stock (Current Balance: ${this.props.balance})</h1>
         <form onSubmit={this.handleSubmit} name="buyStockForm">
-          <input name="ticker" type="text" placeholder="ticker" required />
-          <input name="quantity" type="number" placeholder="1" required />
+          <input name="ticker" type="text" placeholder="Ticker" required />
+          <input
+            name="quantity"
+            type="number"
+            placeholder="Quantity"
+            required
+          />
 
           <button type="submit">Buy</button>
         </form>

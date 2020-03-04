@@ -18,7 +18,11 @@ class TransactionPage extends React.Component {
   }
 
   render() {
-    return <Transactions transactions={this.props.transactions} />;
+    return (
+      <div>
+        <Transactions transactions={this.props.transactions} />
+      </div>
+    );
   }
 }
 
