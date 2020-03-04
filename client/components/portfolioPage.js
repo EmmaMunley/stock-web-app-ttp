@@ -29,7 +29,7 @@ class PortfolioPage extends React.Component {
     );
     console.log(totalPortfolioValue);
     if (!this.state.loaded) {
-      return <div>null</div>;
+      return null;
     }
 
     return (
