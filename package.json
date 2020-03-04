@@ -7,7 +7,7 @@
     "deploy": "script/deploy",
     "heroku-token": "script/deploy/encrypt-heroku-auth-token.js",
     "seed": "node seed.js",
-    "start": "npm run build-watch & npm run start-server",
+    "start": "node server",
     "start:dev": "npm run start-server node --inspect=5858 server",
     "start-server": "nodemon server -e html,js,scss --ignore public --ignore client",
     "build-watch": "webpack -w"
