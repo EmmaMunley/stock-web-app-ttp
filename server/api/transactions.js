@@ -94,7 +94,10 @@ router.post('/:userId', async (req, res, next) => {
       });
       // update the quantity of existing stock in portfolio
       if (portfolio !== null) {
-        const updatedQuantity = portfolio.dataValues.quantity + quantity;
+        const updatedQuantity =
+          Number(portfolio.dataValues.quantity) + Number(quantity);
+
+        console.log('updatedQty', updatedQuantity);
         await portfolio.update(
           { quantity: updatedQuantity },
           { transaction: t }
